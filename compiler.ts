@@ -1,6 +1,8 @@
+import isString from "lodash/isString";
 import { AST, ASTNode, ASTTypes } from "./ast";
 
 export class ASTCompiler {
+  public stringEscapeRegex = /[^ a-zA-Z0-9]/g;
   public state;
   constructor(public astBuilder: AST) {}
   public compile(text: string) {
@@ -17,7 +19,26 @@ export class ASTCompiler {
         this.state.body.push("return ", this.recurse(ast.body), ";");
         break;
       case ASTTypes.Literal:
-        return ast.value;
+        return this.escape(ast.value);
+    }
+  }
+  /**
+   * @description the numeric unicode value of the character we’re
+   * escaping (using charCodeAt), and convert it into the corresponding hexadecimal (base 16)
+   * unicode escape sequence that we can safely concatenate into the generated JavaScript code:
+   * @param c
+   */
+  public stringEscapeFn(c: string) {
+    return "\\u" + ("0000" + c.charCodeAt(0).toString(16)).slice(-4);
+  }
+  private escape(value) {
+    if (isString(value)) {
+      // AST compiler encounters characters like ’ and " in literals, it just puts them in the result,
+      // which results in invalid JavaScript code. The escape method of the compiler should be
+      // able to handle these characters.
+      return "'" + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + "'";
+    } else {
+      return value;
     }
   }
 }

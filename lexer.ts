@@ -14,6 +14,8 @@ export class Lexer {
       this.ch = this.text.charAt(this.index);
       if (this.isNumber(this.ch) || (this.ch === "." && this.isNumber(this.peek()))) {
         this.readNumber();
+      } else if (this.ch === "'" || this.ch === '"') {
+        this.readString(this.ch);
       } else {
         throw new Error("Unexpected next character:" + this.ch);
       }
@@ -22,6 +24,36 @@ export class Lexer {
   }
   public isNumber(ch: any) {
     return 0 <= +ch && +ch <= 9;
+  }
+  public readString(quote: "'" | '"') {
+    // increment the character index to get past the opening quote character
+    this.index++;
+    let string = "";
+    let escape = false;
+    while (this.index < this.text.length) {
+      const ch = this.text.charAt(this.index);
+      if (escape) {
+        const replacement = ESCAPES[ch];
+        if (replacement) {
+          string += replacement;
+        } else {
+          string += ch;
+        }
+        escape = false;
+      } else if (ch === quote) {
+        this.index++;
+        this.tokens.push({
+          text: string,
+          value: string,
+        });
+        return;
+      } else if (ch === "\\") {
+        escape = true;
+      } else {
+        string += ch;
+      }
+      this.index++;
+    }
   }
   public readNumber() {
     let number = "";
@@ -57,3 +89,4 @@ export class Lexer {
     return ch === "-" || ch === "+" || this.isNumber(ch);
   }
 }
+const ESCAPES = { "n": "\n", "f": "\f", "r": "\r", "t": "\t", "v": "\v", "'": "'", '"': '"' };
