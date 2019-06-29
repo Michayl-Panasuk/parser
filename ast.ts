@@ -1,37 +1,35 @@
 import { Lexer } from "./lexer";
-
+// tslint:disable: max-classes-per-file
 export class AST {
   public tokens: any;
   constructor(public lexer: Lexer) {}
-  public ast(text: string): ASTNode {
+  public ast(text: string) {
     this.tokens = this.lexer.lex(text);
-    return new ASTProgram();
+    return this.program();
   }
-}
 
-export abstract class ASTNode {
-  public type: ASTTypes;
-
-  constructor(type: ASTTypes) {
-    this.type = type;
+  public constant() {
+    return { type: ASTTypes.Literal, value: this.tokens[0].value };
   }
-}
 
-class ASTProgram extends ASTNode {
-  public body;
-  constructor(body) {
-    super(ASTTypes.Program);
-    this.body = body;
+  public program() {
+    return { type: ASTTypes.Program, body: this.primary() };
   }
-}
-class ASTConstant extends ASTNode {
-  public value;
-  constructor(value) {
-    super(ASTTypes.Literal);
-    this.value = value;
+  public primary() {
+    if (constants.hasOwnProperty(this.tokens[0].text)) {
+      return constants[this.tokens[0].text];
+    } else {
+      return this.constant();
+    }
   }
 }
 export enum ASTTypes {
   Program,
   Literal,
 }
+
+export const constants = {
+  null: { type: ASTTypes.Literal, value: null },
+  true: { type: ASTTypes.Literal, value: true },
+  false: { type: ASTTypes.Literal, value: false },
+};

@@ -1,5 +1,6 @@
+import isNull from "lodash/isNull";
 import isString from "lodash/isString";
-import { AST, ASTNode, ASTTypes } from "./ast";
+import { AST, ASTTypes } from "./ast";
 
 export class ASTCompiler {
   public stringEscapeRegex = /[^ a-zA-Z0-9]/g;
@@ -12,7 +13,7 @@ export class ASTCompiler {
     this.recurse(ast);
     return new Function(this.state.body.join());
   }
-  public recurse(ast: ASTNode) {
+  public recurse(ast) {
     // TODO check type checking here TS typeof casting
     switch (ast.type) {
       case ASTTypes.Program:
@@ -36,7 +37,9 @@ export class ASTCompiler {
       // AST compiler encounters characters like ’ and " in literals, it just puts them in the result,
       // which results in invalid JavaScript code. The escape method of the compiler should be
       // able to handle these characters.
-      return "'" + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + "'";
+      return '\'' + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + '\'';
+    } else if (isNull(value)) {
+      return "null";
     } else {
       return value;
     }
