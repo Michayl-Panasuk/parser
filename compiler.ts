@@ -1,5 +1,6 @@
 import isNull from "lodash/isNull";
 import isString from "lodash/isString";
+import map from "lodash/map";
 import { AST, ASTTypes } from "./ast";
 
 export class ASTCompiler {
@@ -21,6 +22,9 @@ export class ASTCompiler {
         break;
       case ASTTypes.Literal:
         return this.escape(ast.value);
+      case ASTTypes.ArrayExpression:
+        const elements = map(ast.elements, (elem) => this.recurse(elem));
+        return "[" + elements.join(",") + "]";
     }
   }
   /**
@@ -37,7 +41,7 @@ export class ASTCompiler {
       // AST compiler encounters characters like ’ and " in literals, it just puts them in the result,
       // which results in invalid JavaScript code. The escape method of the compiler should be
       // able to handle these characters.
-      return '\'' + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + '\'';
+      return "'" + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + "'";
     } else if (isNull(value)) {
       return "null";
     } else {

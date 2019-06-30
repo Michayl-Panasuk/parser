@@ -15,6 +15,11 @@ export class Lexer {
         this.readNumber();
       } else if (this.ch === "'" || this.ch === '"') {
         this.readString(this.ch);
+      } else if (this.ch === "[" || this.ch === "]" || this.ch === ",") {
+        this.tokens.push({
+          text: this.ch,
+        });
+        this.index++;
       } else if (this.isIdent(this.ch)) {
         this.readIdent();
       } else if (this.isWhitespace(this.ch)) {
