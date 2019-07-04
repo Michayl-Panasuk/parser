@@ -11,11 +11,13 @@ export class Lexer {
     const length = this.text.length;
     while (this.index < length) {
       this.ch = this.text.charAt(this.index);
-      if (this.isNumber(this.ch) || (this.ch === "." && this.isNumber(this.peek()))) {
+      // parse integers and decimalas with and without first 0
+      if (this.isNumber(this.ch) || (this.is(".") && this.isNumber(this.peek()))) {
         this.readNumber();
-      } else if (this.ch === "'" || this.ch === '"') {
+      } else if (this.is('\'"')) {
         this.readString(this.ch);
-      } else if (this.ch === "[" || this.ch === "]" || this.ch === ",") {
+        // arrays and objects
+      } else if (this.is("[],{}:")) {
         this.tokens.push({
           text: this.ch,
         });
@@ -30,10 +32,13 @@ export class Lexer {
     }
     return this.tokens;
   }
+  public is(chs: string): boolean {
+    return chs.indexOf(this.ch) >= 0;
+  }
   public isNumber(ch: any) {
     return 0 <= +ch && +ch <= 9;
   }
-  public isWhitespace = function(ch) {
+  public isWhitespace(ch) {
     return ch === " " || ch === "\r" || ch === "\t" || ch === "\n " || ch === "\v" || ch === "\u00A0";
   };
   public readString(quote: "'" | '"') {
