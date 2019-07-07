@@ -1,3 +1,8 @@
+/**
+ * @description The Lexer takes the original expression string and returns an array of tokens parsed
+ * from that string. For example, the string "a + b" would result in tokens for a, +,
+ * and b.
+ */
 export class Lexer {
   public text: string;
   public ch: string = undefined;
@@ -40,7 +45,7 @@ export class Lexer {
   }
   public isWhitespace(ch) {
     return ch === " " || ch === "\r" || ch === "\t" || ch === "\n " || ch === "\v" || ch === "\u00A0";
-  };
+  }
   public readString(quote: "'" | '"' | string) {
     // increment the character index to get past the opening quote character
     this.index++;

@@ -3,6 +3,10 @@ import isString from "lodash/isString";
 import map from "lodash/map";
 import { AST, ASTTypes } from "./ast";
 
+/**
+ * @description The AST Compiler takes the abstract syntax tree and compiles it into a JavaScript
+ * function that evaluates the expression represented in the tree.
+ */
 export class ASTCompiler {
   public stringEscapeRegex = /[^ a-zA-Z0-9]/g;
   public state;
@@ -12,7 +16,7 @@ export class ASTCompiler {
     // AST compilation will be done here
     this.state = { body: [] };
     this.recurse(ast);
-    return new Function(this.state.body.join());
+    return new Function("s", this.state.body.join(""));
   }
   public recurse(ast) {
     // TODO check type checking here TS typeof casting
@@ -29,7 +33,8 @@ export class ASTCompiler {
         const properties =
           (ast.properties &&
             ast.properties.map((property) => {
-              const key = property.key.type === ASTTypes.Identifier ? property.key.name : this.escape(property.key.value);
+              const key =
+                property.key.type === ASTTypes.Identifier ? property.key.name : this.escape(property.key.value);
               const value = this.recurse(property.value);
               return key + ":" + value;
             })) ||

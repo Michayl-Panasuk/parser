@@ -6,3 +6,5 @@ export function parse(expr: string) {
   const parser = new Parser(lexer);
   return parser.parse(expr);
 }
+
+// cot a = parse("{a: 2}")();
