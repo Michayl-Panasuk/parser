@@ -1,0 +1,30 @@
+{
+  "name": "parser",
+  "version": "0.1.0",
+  "description": "expressions parser",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Michayl-Panasuk/parser.git"
+  },
+  "keywords": [
+    "js",
+    "parse",
+    "compyle",
+    "ts",
+    "ast",
+    "lexer"
+  ],
+  "author": "panmisha19@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Michayl-Panasuk/parser/issues"
+  },
+  "homepage": "https://github.com/Michayl-Panasuk/parser#readme",
+  "dependencies": {
+    "lodash": "^4.17.11"
+  }
+}
