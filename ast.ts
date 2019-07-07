@@ -30,9 +30,33 @@ export class AST {
   public program() {
     return { type: ASTTypes.Program, body: this.primary() };
   }
+
+  public object() {
+    const properties = [];
+    // consume the keys and values separated by commas:
+    if (!this.peek("}")) {
+      do {
+        const property = { type: ASTTypes.Property, key: undefined, value: undefined };
+        if (this.peek().identifier) {
+          property.key = this.identifier();
+        } else {
+          property.key = this.constant();
+        }
+
+        this.consume(":");
+        // consume the value, which is a whole other primary AST node that we attach onto the property
+        property.value = this.primary();
+        properties.push(property);
+      } while (this.expect(","));
+    }
+    this.consume("}");
+    return { type: ASTTypes.ObjectExpression, properties };
+  }
   public primary() {
     if (this.expect("[")) {
       return this.arrayDeclaration();
+    } else if (this.expect("{")) {
+      return this.object();
     } else if (constants.hasOwnProperty(this.tokens[0].text)) {
       return constants[this.consume().text];
     } else {
@@ -46,7 +70,7 @@ export class AST {
     }
   }
 
-  public peek(e) {
+  public peek(e?) {
     if (this.tokens.length > 0) {
       const text = this.tokens[0].text;
       if (text === e || !e) {
@@ -67,6 +91,9 @@ export enum ASTTypes {
   Program,
   Literal,
   ArrayExpression,
+  ObjectExpression,
+  Property,
+  Identifier
 }
 
 export const constants = {

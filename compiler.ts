@@ -25,6 +25,16 @@ export class ASTCompiler {
       case ASTTypes.ArrayExpression:
         const elements = map(ast.elements, (elem) => this.recurse(elem));
         return "[" + elements.join(",") + "]";
+      case ASTTypes.ObjectExpression:
+        const properties =
+          (ast.properties &&
+            ast.properties.map((property) => {
+              const key = property.key.type === ASTTypes.Identifier ? property.key.name : this.escape(property.key.value);
+              const value = this.recurse(property.value);
+              return key + ":" + value;
+            })) ||
+          [];
+        return "{" + properties.join(",") + "}";
     }
   }
   /**

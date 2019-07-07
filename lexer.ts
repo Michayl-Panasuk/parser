@@ -41,7 +41,7 @@ export class Lexer {
   public isWhitespace(ch) {
     return ch === " " || ch === "\r" || ch === "\t" || ch === "\n " || ch === "\v" || ch === "\u00A0";
   };
-  public readString(quote: "'" | '"') {
+  public readString(quote: "'" | '"' | string) {
     // increment the character index to get past the opening quote character
     this.index++;
     let string = "";
@@ -119,7 +119,7 @@ export class Lexer {
       }
       this.index++;
     }
-    const token = { text };
+    const token = { text, identifier: true };
     this.tokens.push(token);
   }
   public peek(): string | boolean {
